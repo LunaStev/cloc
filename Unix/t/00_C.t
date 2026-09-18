@@ -1618,6 +1618,16 @@ my @Tests = (
                     'args' => '../tests/inputs/vyper.vy',
                 },
                 {
+                    'name' => 'Wave',
+                    'ref'  => '../tests/outputs/comments.wave.yaml',
+                    'args' => '../tests/inputs/comments.wave',
+                },
+                {
+                    'name' => 'Wave comment markers in strings',
+                    'ref'  => '../tests/outputs/comments.wave.yaml',
+                    'args' => '--strip-str-comments ../tests/inputs/comments.wave',
+                },
+                {
                     'name' => 'WebAssembly',
                     'ref'  => '../tests/outputs/type.wast.yaml',
                     'args' => '../tests/inputs/type.wast',

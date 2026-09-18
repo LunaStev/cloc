@@ -1,0 +1,19 @@
+// Wave line comment
+
+/* Block comment
+   across lines. */
+
+/* Outer comment
+   /* Nested comment */
+   still inside the outer comment.
+*/
+
+fun main() {
+    var url: str = "https://wave-lang.dev";
+    var markers: str = "/* text */ // text";
+    var value: i32 = 1; /* inline block */
+    value += 1; // inline line comment
+    /* outer /* inner */ outer */ value += 1;
+    /* Comment only */
+    println("{}", value);
+}

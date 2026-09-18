@@ -8444,6 +8444,40 @@ sub remove_pug_block {                       # {{{1
     my ($ra_lines, ) = @_;
     return remove_indented_block($ra_lines, '^(\s*)(//)\s*$');
 } # 1}}}
+sub remove_wave_comments {                   # {{{1
+    my ($ra_lines, ) = @_;
+    my @save_lines;
+    my $depth = 0;
+    my $quote = '';
+    foreach my $line (@{$ra_lines}) {
+        my $code = '';
+        for (my $i = 0; $i < length($line); $i++) {
+            my $ch = substr($line, $i, 1);
+            my $pair = substr($line, $i, 2);
+            if ($depth) {
+                if ($pair eq '/*') { ++$depth; ++$i; }
+                elsif ($pair eq '*/') { --$depth; ++$i; }
+            } elsif ($quote) {
+                $code .= $ch;
+                if ($ch eq '\\') {
+                    $code .= substr($line, ++$i, 1);
+                } elsif ($ch eq $quote) {
+                    $quote = '';
+                }
+            } elsif ($pair eq '//') {
+                last;
+            } elsif ($pair eq '/*') {
+                $depth = 1;
+                ++$i;
+            } else {
+                $code .= $ch;
+                $quote = $ch if $ch eq '"' or $ch eq "'";
+            }
+        }
+        push @save_lines, $code if $code =~ /\S/;
+    }
+    return @save_lines;
+} # 1}}}
 sub remove_OCaml_comments {                  # {{{1
     my ($ra_lines, ) = @_;
 
@@ -9827,6 +9861,7 @@ sub set_constants {                          # {{{1
             'xaml'        => 'XAML'                  ,
             'wast'        => 'WebAssembly'           ,
             'wat'         => 'WebAssembly'           ,
+            'wave'        => 'Wave'                  ,
             'wgsl'        => 'WGSL'                  ,
             'wxs'         => 'WiX source'            ,
             'wxi'         => 'WiX include'           ,
@@ -11778,6 +11813,7 @@ sub set_constants {                          # {{{1
                                 [ 'remove_html_comments',          ],
                                 [ 'call_regexp_common'  , 'HTML'   ],
                             ],
+    'Wave'               => [ [ 'remove_wave_comments' ], ],
     'WebAssembly'           => [
                                 [ 'remove_matches'      , '^\s*;;' ],
                             ],
@@ -12452,6 +12488,7 @@ sub set_constants {                          # {{{1
     'Vuejs Component'              =>   2.00,
     'Vyper'                        =>   4.20,
     'Web Services Description'     =>   1.00,
+    'Wave'                         =>   1.00,
     'WebAssembly'                  =>   0.45,
     'WGSL'                         =>   2.50,
     'Windows INF'                  =>   1.00,
